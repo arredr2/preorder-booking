@@ -120,6 +120,7 @@
         inputErrorMessage = "";
 
         selectedAddress = parsed;
+        handleSubmit();
       }}
       options={{
         componentRestrictions: { country: "us" },
@@ -127,7 +128,6 @@
     />
   </div>
   <button
-      on:click={handleSubmit}
       class="submitAddressButton button secondary w-button"
     >
       {addressCtaText}
