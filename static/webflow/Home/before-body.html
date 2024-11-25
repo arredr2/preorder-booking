@@ -1,0 +1,380 @@
+<!-- CSS first -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.5/public/preorder-app/bundle.css"
+/>
+
+<!-- Functionality scripts -->
+
+<script
+  charset="utf-8"
+  type="text/javascript"
+  src="//js-eu1.hsforms.net/forms/embed/v2.js"
+  crossorigin
+  defer
+></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.5/public/preorder-app/embed.js"
+  crossorigin
+  defer
+></script>
+
+<!-- hubspot form submit controls -->
+<script type="text/javascript">
+  const hsOnFormSubmitted = (form, args) => {
+    if (posthog) {
+      posthog.capture(
+        "user_submitted_hubspot_form",
+        {},
+        { send_instantly: true }
+      );
+    }
+    const confirmationUrlWithParams = (base) => {
+      const address =
+        window.hubspotAddressData && window.hubspotAddressData.formattedAddress
+          ? window.hubspotAddressData.formattedAddress
+          : "";
+      const firstname =
+        args.submissionValues && args.submissionValues.firstname
+          ? args.submissionValues.firstname
+          : "";
+      const lastname =
+        args.submissionValues && args.submissionValues.lastname
+          ? args.submissionValues.lastname
+          : "";
+      const email =
+        args.submissionValues && args.submissionValues.email
+          ? args.submissionValues.email
+          : "";
+      const promo_code =
+        args.submissionValues && args.submissionValues.promo_code
+          ? args.submissionValues.promo_code
+          : "BLACKFRIDAY";
+      const name = firstname + " " + lastname;
+
+      return (
+        base +
+        "?address=" +
+        encodeURIComponent(address) +
+        "&name=" +
+        encodeURIComponent(name) +
+        "&email=" +
+        encodeURIComponent(email) +
+        "&promo_code=" +
+        encodeURIComponent(promo_code)
+      );
+    };
+    console.log(confirmationUrlWithParams("/solar-confirmation-booking"));
+
+    localStorage.setItem("email", args.submissionValues.email);
+
+    var servingNow = args?.submissionValues?.zipConfig?.servingNow;
+    var isHomeowner = args?.submissionValues?.homeowner;
+    var promoCode = args?.submissionValues?.promo_code;
+
+    gtag("event", "preorder-form-submit-success", {
+      firstName: args?.submissionValues?.firstname,
+      lastName: args?.submissionValues?.lastname,
+      email: args?.submissionValues?.email,
+      phoneNumber: args?.submissionValues?.phone,
+      isHomeowner: args?.submissionValues?.homeowner,
+    });
+
+    // redirect is now controlled from here
+    if (["preorder"].includes(servingNow) && isHomeowner === "Yes") {
+      window.location.href = confirmationUrlWithParams(
+        "/confirmation-preorder"
+      );
+    } else if (promoCode && promoCode == "DREAMHOME" && isHomeowner === "Yes") {
+      window.location.href = confirmationUrlWithParams(
+        "/lennar-existing-homeowner"
+      );
+    } else if (servingNow === "install" && isHomeowner === "Yes") {
+      window.location.href = confirmationUrlWithParams("/reserve-battery");
+    } else if (servingNow === "rep" && isHomeowner === "Yes") {
+      window.location.href = confirmationUrlWithParams("/reserve-rep");
+    } else if (servingNow === "500install" && isHomeowner === "Yes") {
+      window.location.href = confirmationUrlWithParams("/reserve-battery-500");
+    } else if (servingNow === "fort worth" && isHomeowner === "Yes") {
+      window.location.href = confirmationUrlWithParams(
+        "/confirmation-fort-worth"
+      );
+    } else if (servingNow === "yes" && isHomeowner === "Yes") {
+      window.location.href = confirmationUrlWithParams(
+        "https://join.basepowercompany.com/reserve-now"
+      );
+    } else if (isHomeowner === "No") {
+      window.location.href = "/unqualified";
+    } else {
+      window.location.href = "/confirmation";
+    }
+  };
+  window.hsOnFormSubmitted = hsOnFormSubmitted;
+</script>
+
+<!-- Pre-order app init -->
+<script>
+  // load feature flags first
+  document.addEventListener("DOMContentLoaded", function () {
+    BasePreorderApp.initialize({
+      targetElsAddressInput: [
+        document.getElementById("address-form"),
+        document.getElementById("hero-address-entry"),
+      ],
+      googlePublicApiKey: "AIzaSyB0o_nPI-xjHYKg7KB0bl87Yhnf2ng9Nsg",
+      targetPanel: "#popup-form",
+      targetAddressPanel: "#address-popup",
+      targetAvailableState: "#preorder-base",
+      targetNotAvailableState: "#not-available",
+      targetStateContainer: "#popup-form .form-box_holder",
+      targetAvailableText: `#preorder-availability`,
+      targetDisplayAddress: `#service-address`,
+      querySelectorClickToOpenForm: '[data-preorder="open"]',
+      googleSheetConfig: {
+        zipsCsvUrl:
+          "https://bpc-web-static-files.s3.us-east-2.amazonaws.com/deregulated-zips.csv",
+      },
+      // hubspot
+      hsFormSuccess: {
+        target: "#hubspot-preorder-form",
+        region: "na1",
+        portalId: "43873875",
+        formId: "a41c83a1-a371-4080-be84-5699814bc294",
+        onFormSubmit: () => {
+          if (posthog) {
+            posthog.capture("user-submit-hubspot-form");
+          }
+          gtag("event", "preorder-submitted");
+        },
+        onFormSubmitted: window.hsOnFormSubmitted,
+      },
+      hsFormNewsletter: {
+        target: "#hubspot-email-form",
+        region: "na1",
+        portalId: "43873875",
+        formId: "bdfdc2d3-1e91-44e7-a477-02a68a93d0f9",
+        onFormSubmit: () => {
+          gtag("event", "newsletter-submitted");
+        },
+        onFormSubmitted: () => {
+          // redirect is now controlled from here
+          window.location.href = "/newsletter-confirmation";
+        },
+      },
+      onAddressSelect: () => {
+        if (posthog) {
+          posthog.capture("user-submit-address-form");
+        }
+      },
+      onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
+        window.hubspotAddressData = addressData;
+        if (posthog) {
+          posthog.capture("user-submit-address-form");
+
+          // maybe redirect to sign-up form
+          if (posthog.isFeatureEnabled("redirect-to-join-form")) {
+            var signUpFormURL = "https://join.basepowercompany.com/";
+            var url = new URL(signUpFormURL);
+            var currentParams = new URLSearchParams(window.location.search);
+
+            var selectedParams = new URLSearchParams({
+              gclid: currentParams.get("gclid"),
+              referrer_name: currentParams.get("referrer_name"),
+              addressData: JSON.stringify(addressData),
+            });
+
+            url.search = selectedParams.toString();
+
+            window.location.href = url.toString();
+
+            return;
+          }
+        }
+        if (zipConfig?.servingNow === "preorder") {
+          if (posthog) {
+            posthog.capture("user-sees-address-preorder");
+          }
+          window.hsFormPreorder
+            .getElementsByClassName("hs_submit")[0]
+            .getElementsByClassName("hs-button")[0].value = "Reserve Your Spot";
+          document.getElementsByClassName("form-heading top")[0].innerHTML =
+            "Submit your information to reserve your spot.";
+          document
+            .getElementsByClassName("form-box")[0]
+            .getElementsByTagName("h1")[0].innerHTML = "Base is coming soon!";
+        }
+        if (zipConfig?.servingNow === "") {
+          if (posthog) {
+            posthog.capture("user-sees-address-waitlist");
+          }
+          window.hsFormPreorder
+            .getElementsByClassName("hs_submit")[0]
+            .getElementsByClassName("hs-button")[0].value = "Join the Waitlist";
+          document.getElementsByClassName("form-heading top")[0].innerHTML =
+            "Submit your information to join the waitlist.";
+          document
+            .getElementsByClassName("form-box")[0]
+            .getElementsByTagName("h1")[0].innerHTML = "Base is coming soon!";
+        }
+        if (zipConfig?.servingNow === "yes") {
+          if (posthog) {
+            posthog.capture("user-sees-hubspot-form");
+          }
+          //document.getElementsByClassName("servis_address")[1].innerHTML = "";
+        }
+        gtag("event", "address-submit", { leadType, addressData, zipConfig });
+      },
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const gclid = urlParams.get("gclid");
+    if (gclid) {
+      document.querySelector('input[name="gclid"]').value = gclid;
+    }
+  });
+</script>
+
+<!-- Load Google Places API -->
+<!-- <script async type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtFCcssmw2kdWq90R_D6JDqPIqRFOYsE0&libraries=places"></script> -->
+<!-- Set autocomplete input -->
+<script>
+  // Function to initialize your autocomplete feature
+  function initializeAutocomplete() {
+    var addressInputs = [document.getElementById("Address")];
+    addressInputs.forEach(function (input) {
+      if (input) {
+        var autocompleteOptions = {
+          types: [
+            "street_address",
+            "premise",
+            "subpremise",
+            "point_of_interest",
+          ],
+          componentRestrictions: { country: ["us"] },
+        };
+
+        var autocomplete = new google.maps.places.Autocomplete(
+          input,
+          autocompleteOptions
+        );
+
+        autocomplete.setComponentRestrictions({ country: ["us"] });
+        autocomplete.setFields(["address_components", "formatted_address"]);
+        // Optional: Handle place changed event
+        autocomplete.addListener("place_changed", function () {
+          var place = autocomplete.getPlace();
+          console.log(place);
+        });
+      }
+    });
+    console.log("Autocomplete initialized");
+  }
+
+  // Function to check for Google maps API and initialize
+  function checkGoogleApi() {
+    if (window.google && window.google.maps && window.google.maps.places) {
+      // Google API is already loaded
+      initializeAutocomplete();
+    } else {
+      // Google API isn't loaded yet, wait and check again
+      setTimeout(checkGoogleApi, 100);
+    }
+  }
+
+  // Start checking for Google maps API when the DOM is fully loaded
+  document.addEventListener("DOMContentLoaded", function () {
+    checkGoogleApi();
+  });
+
+  window.addEventListener("load", function () {
+    if (window.google && !window.google.maps) {
+      checkAndInitializeGoogleApi();
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get the Webflow form element by ID
+    const form = document.getElementById("wf-form-Outage-Form");
+
+    // Add an event listener for the form submission
+    form.addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      // Get the address from the form input field
+      var selectedAddress = document.getElementById("Address").value;
+      var reportEmail = document.getElementById("outage-email").value;
+
+      if (selectedAddress) {
+        // Trigger the workflow with the selected address
+        triggerWorkflow(selectedAddress, reportEmail);
+      } else {
+        console.error("No address selected");
+      }
+    });
+  });
+
+  // Function to trigger retool workflow "Generate Energy Report from Address/ESID"
+  async function triggerWorkflow(address, reportEmail) {
+    const promoCodeMetadataURL =
+      "https://api.retool.com/v1/workflows/97383d56-9f11-4d5c-903c-859455cacbe8/startTrigger?workflowApiKey=retool_wk_e71f1d9ddc48499fb12dd9ad7f295039"; // Your Retool API URL here
+
+    const body = JSON.stringify({
+      address: address, // Send the address in the body of the request
+      email: reportEmail,
+    });
+
+    try {
+      const response = await fetch(promoCodeMetadataURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: body,
+      });
+
+      if (!response.ok) {
+        console.error("Failed to trigger workflow");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Workflow triggered successfully:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+</script>
+
+<!-- Third-party trackers last -->
+
+<!-- Google Tag Manager -->
+<script>
+  (function (w, d, s, l, i) {
+    w[l] = w[l] || [];
+    w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+    var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s),
+      dl = l != "dataLayer" ? "&l=" + l : "";
+    j.defer = true;
+    j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+    f.parentNode.insertBefore(j, f);
+  })(window, document, "script", "dataLayer", "GTM-M2FQX4R6");
+</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript - for browsers with scripting disabled) -->
+<noscript
+  ><iframe
+    src="https://www.googletagmanager.com/ns.html?id=GTM-M2FQX4R6"
+    height="0"
+    width="0"
+    style="display: none; visibility: hidden"
+  ></iframe
+></noscript>
+<!-- End Google Tag Manager (noscript) -->
