@@ -51,6 +51,7 @@
         window.location.href = "/newsletter-confirmation";
       },
     },
+    hidePanelEl: true,
     onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
       gtag("event", "address-submit", { leadType, addressData, zipConfig });
     },

@@ -2,7 +2,7 @@ import { PreorderApp } from "./PreorderApp";
 
 PreorderApp.initialize({
   targetElAddressInput: document.getElementById(
-    "hero-address-entry"
+    "hero-address-entry",
   ) as HTMLDivElement,
   googlePublicApiKey: "AIzaSyB0o_nPI-xjHYKg7KB0bl87Yhnf2ng9Nsg",
   targetPanel: "#popup-form",
@@ -54,6 +54,7 @@ PreorderApp.initialize({
       window.location.href = "/newsletter-confirmation";
     },
   },
+  hidePanelEl: true,
 
   // hsFormSuccess: {
   //   target: "#hubspot-preorder-form",

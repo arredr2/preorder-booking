@@ -41,7 +41,7 @@ export type PreorderAppConfig = {
     data: ParsedPlaceResult,
     type: string,
   ) => void | undefined;
-  hidePanelEl: boolean;
+  hidePanelEl?: boolean;
   addressCtaText?: string;
 };
 export type SubmitFormDescription = { label: string; value: string }[];
