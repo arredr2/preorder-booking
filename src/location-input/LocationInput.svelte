@@ -48,9 +48,6 @@
   export let onAddressSubmitSuccess: OnAddressSubmitSuccess = () => {};
   export let hidePanelEl: boolean = false;
 
-  console.log("hidepanelel");
-  console.log(hidePanelEl);
-
   $: inputErrorMessage = "";
   let selectedAddress: ParsedPlaceResult | undefined;
   $: selectedAddress = undefined;

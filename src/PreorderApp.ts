@@ -25,10 +25,6 @@ export const PreorderApp = {
       addressCtaText,
     } = props;
 
-    debugger;
-
-    console.log(hidePanelEl);
-
     initializeHubspotForms({
       hsFormSuccess,
       hsFormNewsletter,
