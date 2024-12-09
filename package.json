@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "deploy": "npm build && node gh-pages",
-    "build:embed": "rollup -c rollup.config.all.js && git add . && git commit -m 'new build'",
+    "build": "rollup -c rollup.config.all.js",
+    "build:embed": "npm build && git add . && git commit -m 'new build'",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json"
