@@ -12,24 +12,20 @@ To develop app, run these commands in the command line
 
 ```
 // if starting for the first time
-yarn install
+npm install
 // then
-yarn dev
+npm run dev
 
 ```
 
-Make sure you have `node` installed to run this project. If you don't have yarn installed
-
-```
-npm install -g yarn
-```
+Make sure you have `node` installed to run this project.
 
 ## UMD js files for web embedding
 
 We will need to build and compile the project first on your local machine:
 
 ```
-yarn build:embed
+npm build:embed
 ```
 
 New files will be created for each configurator, e.g. for empresa, these files will be created:
