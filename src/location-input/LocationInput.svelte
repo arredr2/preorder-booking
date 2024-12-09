@@ -20,18 +20,21 @@
 
   onMount(async () => {
     loadZips();
-    jQuery(".input-address-container").on('click', function() {
+    jQuery(".input-address-container").on("click", function () {
       jQuery(".focus_overlay").show();
-	    jQuery(".input-address-container").addClass("focused");
-	    jQuery("input.location-search-input").attr("placeholder", "Enter your address");
-	    jQuery("button.submitAddressButton").hide();
+      jQuery(".input-address-container").addClass("focused");
+      jQuery("input.location-search-input").attr(
+        "placeholder",
+        "Enter your address",
+      );
+      jQuery("button.submitAddressButton").hide();
     });
-    jQuery(".input-address-container").on('keydown', function() {
+    jQuery(".input-address-container").on("keydown", function () {
       jQuery("input.location-search-input").attr("placeholder", "");
     });
-	  jQuery(".focus_overlay").on('click', function() {
+    jQuery(".focus_overlay").on("click", function () {
       jQuery(".focus_overlay").hide();
-	    jQuery(".submitAddressButton").show();
+      jQuery(".submitAddressButton").show();
       jQuery(".input-address-container").removeClass("focused");
     });
   });
@@ -43,6 +46,7 @@
   export let targetNotAvailableStateEl: HTMLDivElement;
   export let onAddressSelect: (data: ParsedPlaceResult) => void | undefined;
   export let onAddressSubmitSuccess: OnAddressSubmitSuccess = () => {};
+  export let hidePanelEl: boolean = false;
 
   $: inputErrorMessage = "";
   let selectedAddress: ParsedPlaceResult | undefined;
@@ -53,12 +57,18 @@
       inputErrorMessage = "Please enter a full address.";
       return;
     }
-    if (!selectedAddress.postalCode || !selectedAddress.houseNumber || !selectedAddress.street) {
+    if (
+      !selectedAddress.postalCode ||
+      !selectedAddress.houseNumber ||
+      !selectedAddress.street
+    ) {
       inputErrorMessage = "Please enter a full address.";
       return;
     }
 
-    fadeIn(panelEl);
+    if (!hidePanelEl) {
+      fadeIn(panelEl);
+    }
     displayBlock(stateContainerEl);
     displayNone(addressPanelEl);
 
@@ -78,7 +88,7 @@
       setHiddenHubspotInputs(
         window.hsFormPreorder,
         selectedAddress,
-        foundZipItem
+        foundZipItem,
       );
       hsFormStateBooking.update({
         selectedAddress,
@@ -87,7 +97,7 @@
       onAddressSubmitSuccess?.(
         selectedAddress,
         "lead-preorder-form",
-        foundZipItem
+        foundZipItem,
       );
     } else {
       displayBlock(targetNotAvailableStateEl);
@@ -100,7 +110,7 @@
       onAddressSubmitSuccess?.(
         selectedAddress,
         "lead-newsletter-form",
-        foundZipItem
+        foundZipItem,
       );
     }
   };
@@ -108,7 +118,10 @@
 
 <div class="input-address-wrap">
   <div class="input-address-container">
-    <img src="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.1/public/Base_files/map-pin.svg" alt="Map pin icon" />
+    <img
+      src="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.1/public/Base_files/map-pin.svg"
+      alt="Map pin icon"
+    />
     <GooglePlaceAutocomplete
       class="location-search-input"
       apiKey={googlePublicApiKey}
@@ -127,10 +140,8 @@
       }}
     />
   </div>
-  <button
-      class="submitAddressButton button secondary w-button"
-    >
-      {addressCtaText}
+  <button class="submitAddressButton button secondary w-button">
+    {addressCtaText}
   </button>
   {#if inputErrorMessage}
     <p class="preorder-address-error-message">
@@ -152,14 +163,14 @@
   .input-address-container {
     display: flex;
     padding: var(--Spacing-spacing-m, 8px);
-	  flex-direction: row;
-	  justify-content: center;
-	  align-items: flex-start;
-	  gap: var(--Spacing-spacing-m, 8px);
-	  align-self: stretch;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--Spacing-spacing-m, 8px);
+    align-self: stretch;
     height: 66px;
     background: #fff;
-	  border-radius: var(--Radius-radius-l, 12px);
+    border-radius: var(--Radius-radius-l, 12px);
     position: relative;
     z-index: 551;
     @media screen and (max-width: 768px) {
@@ -172,7 +183,7 @@
   }
   .input-address-container.focused {
     /* Focus styles */
-    outline: 2px solid var(--Greyscale-20, #D2D4D4);
+    outline: 2px solid var(--Greyscale-20, #d2d4d4);
   }
   .input-address-container.focused:before {
     content: " ";
@@ -183,26 +194,26 @@
     right: 0px;
     bottom: 0px;
     border-radius: 12px;
-    border: 1px solid var(--Greyscale-90, #333E3F);
-}
+    border: 1px solid var(--Greyscale-90, #333e3f);
+  }
   .input-address-container img {
     margin: 13px 0 9px 10px;
     position: absolute;
     left: 8px;
   }
   .submitAddressButton {
-	  display: flex;
+    display: flex;
     flex-shrink: 0;
-	  width: 104px;
-	  height: 48px;
-	  flex-direction: column;
-	  justify-content: center;
-	  align-items: center;
-	  gap: var(--Spacing-spacing-m, 8px);
-	  border-radius: var(--Radius-radius-m, 8px);
-	  background: var(--Semantics-primary, #0C9953);
-	  color: var(--Semantics-onPrimary, #FFF);
-	  text-align: center;
+    width: 104px;
+    height: 48px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--Spacing-spacing-m, 8px);
+    border-radius: var(--Radius-radius-m, 8px);
+    background: var(--Semantics-primary, #0c9953);
+    color: var(--Semantics-onPrimary, #fff);
+    text-align: center;
     position: absolute;
     right: 9px;
     margin-top: -56px;
@@ -214,10 +225,10 @@
       margin-left: 10px;
     }
 
-	  /* label/label2 */
-	  font-size: 14px;
-	  font-weight: 500;
-}
+    /* label/label2 */
+    font-size: 14px;
+    font-weight: 500;
+  }
 
   .preorder-address-error-message {
     color: #c95151;
@@ -233,11 +244,11 @@
     border-radius: 12px;
     border: none !important;
     outline: none !important;
-	  /* body/body1 */
-	  font-size: 18px;
-	  font-weight: 400;
-	  line-height: 24px; /* 133.333% */
-    padding: 3px 16px 0 48px;    
+    /* body/body1 */
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px; /* 133.333% */
+    padding: 3px 16px 0 48px;
     @media screen and (max-width: 768px) {
       font-size: 14px;
     }
@@ -246,7 +257,7 @@
     }
   }
   .location-search-input::placeholder {
-    color: var(--Greyscale-60, #777E7F);
+    color: var(--Greyscale-60, #777e7f);
   }
   .location-search-input.input:focus {
     box-shadow: none;
@@ -260,52 +271,52 @@
     transition: 0.2s all;
   }
 
-.signup_wrapper {
-  margin-bottom: 18px;
-  @media screen and (max-width: 768px) {
-    margin-bottom: 48px;
+  .signup_wrapper {
+    margin-bottom: 18px;
+    @media screen and (max-width: 768px) {
+      margin-bottom: 48px;
+    }
   }
-}
 
-.signup_wrapper .paragraph.text-color-white.beta_text {
-	display: inline;
-  position: absolute;
-  left: 0;
-	gap: var(--Spacing-spacing-m, 8px);
-	border-radius: 4px;
-	background: rgba(28, 40, 41, 0.50);
-	color: var(--Primitives-White, #FFF);
-  padding: var(--Spacing-spacing-xs, 2px) var(--Spacing-spacing-m, 8px);
-  margin-top: 6px;
-
-	/* body/body2 */
-	font-size: 14px;
-	font-weight: 400;
-	line-height: 20px; /* 142.857% */
-}
-
-.button.secondary {
-  color: var(--Semantics-onPrimary, #FFF);
-  background: var(--Semantics-primary, #0C9953);
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-  @media screen and (max-width: 768px) {
+  .signup_wrapper .paragraph.text-color-white.beta_text {
+    display: inline;
+    position: absolute;
     left: 0;
-  }
-}
-.button.secondary:hover {
-  background: var(--Semantics-primary, #065c3f);
-}
+    gap: var(--Spacing-spacing-m, 8px);
+    border-radius: 4px;
+    background: rgba(28, 40, 41, 0.5);
+    color: var(--Primitives-White, #fff);
+    padding: var(--Spacing-spacing-xs, 2px) var(--Spacing-spacing-m, 8px);
+    margin-top: 6px;
 
-.focus_overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(40, 51, 52, 0.5);
-  z-index: 50;
-  display: none;
-}
+    /* body/body2 */
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px; /* 142.857% */
+  }
+
+  .button.secondary {
+    color: var(--Semantics-onPrimary, #fff);
+    background: var(--Semantics-primary, #0c9953);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    @media screen and (max-width: 768px) {
+      left: 0;
+    }
+  }
+  .button.secondary:hover {
+    background: var(--Semantics-primary, #065c3f);
+  }
+
+  .focus_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(40, 51, 52, 0.5);
+    z-index: 50;
+    display: none;
+  }
 </style>

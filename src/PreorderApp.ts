@@ -21,6 +21,7 @@ export const PreorderApp = {
       querySelectorClickToOpenForm,
       onAddressSelect,
       onAddressSubmitSuccess,
+      hidePanelEl,
       addressCtaText,
     } = props;
 
@@ -31,17 +32,17 @@ export const PreorderApp = {
 
     const panelEl = document.querySelector(targetPanel) as HTMLDivElement;
     const stateContainerEl = document.querySelector(
-      targetStateContainer
+      targetStateContainer,
     ) as HTMLDivElement;
 
     const addressPanelEl = document.querySelector(
-      targetAddressPanel
+      targetAddressPanel,
     ) as HTMLDivElement;
     const targetAvailableStateEl = document.querySelector(
-      targetAvailableState
+      targetAvailableState,
     ) as HTMLDivElement;
     const targetNotAvailableStateEl = document.querySelector(
-      targetNotAvailableState
+      targetNotAvailableState,
     ) as HTMLDivElement;
 
     // open form button actions
@@ -87,6 +88,7 @@ export const PreorderApp = {
         targetNotAvailableStateEl,
         onAddressSelect,
         onAddressSubmitSuccess,
+        hidePanelEl,
         addressCtaText,
       },
     });

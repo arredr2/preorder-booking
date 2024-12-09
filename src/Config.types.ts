@@ -18,7 +18,7 @@ export type HubspotFormConfig = {
         zipConfig?: StoredZipDataItem;
       };
       redirectUrl: string | null;
-    }
+    },
   ) => void;
 };
 
@@ -39,8 +39,9 @@ export type PreorderAppConfig = {
   onAddressSelect?: (data: ParsedPlaceResult) => void;
   onAddressSubmitSuccess?: (
     data: ParsedPlaceResult,
-    type: string
+    type: string,
   ) => void | undefined;
+  hidePanelEl: boolean;
   addressCtaText?: string;
 };
 export type SubmitFormDescription = { label: string; value: string }[];
