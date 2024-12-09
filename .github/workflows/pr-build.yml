@@ -9,7 +9,8 @@ permissions:
   pull-requests: read
 
 jobs:
-  pre-commit:
+  # We check that the build is current - if this fails, you need to commit the output of `npm run build`.
+  check-build-is-up-to-date:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
