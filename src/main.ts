@@ -54,7 +54,6 @@ PreorderApp.initialize({
       window.location.href = "/newsletter-confirmation";
     },
   },
-  hidePanelEl: true,
 
   // hsFormSuccess: {
   //   target: "#hubspot-preorder-form",

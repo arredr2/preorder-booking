@@ -5728,7 +5728,6 @@
     <!-- Pre-order app init -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        debugger;
         BasePreorderApp.initialize({
           targetElsAddressInput: [
             document.getElementById("address-form"),
@@ -5774,7 +5773,6 @@
               window.location.href = "/newsletter-confirmation";
             },
           },
-          hidePanelEl: true,
           onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
             window.hubspotAddressData = addressData;
             if (zipConfig?.servingNow === "preorder") {
