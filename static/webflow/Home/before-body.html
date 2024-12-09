@@ -26,7 +26,7 @@
       posthog.capture(
         "user_submitted_hubspot_form",
         {},
-        { send_instantly: true }
+        { send_instantly: true },
       );
     }
     const confirmationUrlWithParams = (base) => {
@@ -49,7 +49,7 @@
       const promo_code =
         args.submissionValues && args.submissionValues.promo_code
           ? args.submissionValues.promo_code
-          : "BLACKFRIDAY";
+          : "CYBER";
       const name = firstname + " " + lastname;
 
       return (
@@ -83,11 +83,11 @@
     // redirect is now controlled from here
     if (["preorder"].includes(servingNow) && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams(
-        "/confirmation-preorder"
+        "/confirmation-preorder",
       );
-    } else if (promoCode && promoCode == "DREAMHOME" && isHomeowner === "Yes") {
+    } else if (promoCode === "DREAMHOME") {
       window.location.href = confirmationUrlWithParams(
-        "/lennar-existing-homeowner"
+        "https://basepowercompany.com/reserve-now",
       );
     } else if (servingNow === "install" && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams("/reserve-battery");
@@ -97,11 +97,11 @@
       window.location.href = confirmationUrlWithParams("/reserve-battery-500");
     } else if (servingNow === "fort worth" && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams(
-        "/confirmation-fort-worth"
+        "/confirmation-fort-worth",
       );
     } else if (servingNow === "yes" && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams(
-        "https://join.basepowercompany.com/reserve-now"
+        "https://join.basepowercompany.com/reserve-now",
       );
     } else if (isHomeowner === "No") {
       window.location.href = "/unqualified";
@@ -114,7 +114,6 @@
 
 <!-- Pre-order app init -->
 <script>
-  // load feature flags first
   document.addEventListener("DOMContentLoaded", function () {
     BasePreorderApp.initialize({
       targetElsAddressInput: [
@@ -259,7 +258,7 @@
 
         var autocomplete = new google.maps.places.Autocomplete(
           input,
-          autocompleteOptions
+          autocompleteOptions,
         );
 
         autocomplete.setComponentRestrictions({ country: ["us"] });
@@ -301,6 +300,10 @@
   document.addEventListener("DOMContentLoaded", function () {
     // Get the Webflow form element by ID
     const form = document.getElementById("wf-form-Outage-Form");
+
+    if (!form) {
+      return;
+    }
 
     // Add an event listener for the form submission
     form.addEventListener("submit", function (event) {
@@ -378,3 +381,140 @@
   ></iframe
 ></noscript>
 <!-- End Google Tag Manager (noscript) -->
+
+<!-- Battery Table Selector -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const selectElement = document.getElementById("select-battery");
+    const table1 = document.getElementById("table-1-battery");
+    const table2 = document.getElementById("table-2-batteries");
+
+    if (!selectElement || !table1 || !table2) return; // Safeguard against missing elements
+
+    // Add event listener to the select element
+    selectElement.addEventListener("change", function () {
+      if (selectElement.value === "1 Base battery") {
+        table1.style.display = "block"; // Show table 1
+        table2.style.display = "none"; // Hide table 2
+      } else if (selectElement.value === "2 Base batteries") {
+        table1.style.display = "none"; // Hide table 1
+        table2.style.display = "block"; // Show table 2
+      }
+    });
+
+    // Set the initial state based on the default selection
+    selectElement.dispatchEvent(new Event("change"));
+  });
+</script>
+<!-- End Battery Table Selector -->
+
+<!-- GSAP Swiper Script -->
+<!-- GSAP Core -->
+<script
+  src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"
+  defer
+></script>
+
+<!-- Draggable Plugin -->
+<script
+  src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js"
+  defer
+></script>
+
+<script>
+  window.addEventListener("load", () => {
+    gsap.registerPlugin(Draggable);
+
+    const wrapper = document.querySelector(".swiper-wrapper");
+    const container = document.querySelector(".swiper-container");
+    const slides = Array.from(document.querySelectorAll(".swiper-slide"));
+
+    if (!wrapper || !container || slides.length === 0) return; // Safeguard
+
+    const duplicateSlides = () => {
+      let totalWidth = 0;
+      const containerWidth = container.offsetWidth;
+
+      // Clone slides until total width exceeds container width twice
+      while (totalWidth < containerWidth * 2) {
+        slides.forEach((slide) => {
+          const clone = slide.cloneNode(true);
+          wrapper.appendChild(clone);
+          totalWidth += slide.offsetWidth;
+        });
+      }
+    };
+
+    duplicateSlides();
+
+    const wrapperWidth = wrapper.scrollWidth;
+
+    // GSAP marquee animation
+    let marquee = gsap.to(wrapper, {
+      x: `-${wrapperWidth / 2}px`,
+      duration: 80,
+      ease: "none",
+      repeat: -1,
+    });
+
+    Draggable.create(wrapper, {
+      type: "x",
+      bounds: { minX: -wrapperWidth / 2, maxX: 0 },
+      inertia: true,
+      edgeResistance: 0.9,
+      onDragStart: () => marquee.pause(),
+      onDragEnd: () => {
+        const currentX = gsap.getProperty(wrapper, "x");
+        marquee.kill();
+        marquee = gsap.to(wrapper, {
+          x: `-${wrapperWidth / 2}px`,
+          duration: 80,
+          ease: "none",
+          repeat: -1,
+          modifiers: {
+            x: (x) => {
+              const mod = wrapperWidth / 2;
+              return (parseFloat(x) % mod) + "px";
+            },
+          },
+        });
+      },
+    });
+
+    container.addEventListener("touchstart", () => marquee.pause());
+    container.addEventListener("touchend", () => marquee.play());
+  });
+</script>
+<!-- End GSAP Swiper Script -->
+
+<!-- Hide default arrow on select input -->
+<style>
+  .w-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+</style>
+<!-- End hide default arrow on select input -->
+
+<style>
+  .swiper-container {
+    overflow: hidden;
+    display: flex;
+    cursor: grab;
+  }
+
+  .swiper-container:active {
+    cursor: grabbing;
+  }
+
+  .swiper-wrapper {
+    display: flex;
+    width: max-content;
+  }
+
+  .swiper-slide {
+    flex-shrink: 0;
+    width: auto;
+    margin-right: 20px;
+  }
+</style>
