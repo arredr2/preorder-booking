@@ -49,7 +49,7 @@
       const promo_code =
         args.submissionValues && args.submissionValues.promo_code
           ? args.submissionValues.promo_code
-          : "CYBER";
+          : "HOLIDAY";
       const name = firstname + " " + lastname;
 
       return (
@@ -117,121 +117,118 @@
   // We wait for posthog to initialize feature flags before loading the application.
   // We can remove this once we stop experimenting here.
   document.addEventListener("DOMContentLoaded", function () {
-    posthog.onFeatureFlags(function () {
-      BasePreorderApp.initialize({
-        targetElsAddressInput: [
-          document.getElementById("address-form"),
-          document.getElementById("hero-address-entry"),
-        ],
-        googlePublicApiKey: "AIzaSyB0o_nPI-xjHYKg7KB0bl87Yhnf2ng9Nsg",
-        targetPanel: "#popup-form",
-        targetAddressPanel: "#address-popup",
-        targetAvailableState: "#preorder-base",
-        targetNotAvailableState: "#not-available",
-        targetStateContainer: "#popup-form .form-box_holder",
-        targetAvailableText: `#preorder-availability`,
-        targetDisplayAddress: `#service-address`,
-        querySelectorClickToOpenForm: '[data-preorder="open"]',
-        googleSheetConfig: {
-          zipsCsvUrl:
-            "https://bpc-web-static-files.s3.us-east-2.amazonaws.com/deregulated-zips.csv",
-        },
-        // hubspot
-        hsFormSuccess: {
-          target: "#hubspot-preorder-form",
-          region: "na1",
-          portalId: "43873875",
-          formId: "a41c83a1-a371-4080-be84-5699814bc294",
-          onFormSubmit: () => {
-            if (posthog) {
-              posthog.capture("user-submit-hubspot-form");
-            }
-            gtag("event", "preorder-submitted");
-          },
-          onFormSubmitted: window.hsOnFormSubmitted,
-        },
-        hsFormNewsletter: {
-          target: "#hubspot-email-form",
-          region: "na1",
-          portalId: "43873875",
-          formId: "bdfdc2d3-1e91-44e7-a477-02a68a93d0f9",
-          onFormSubmit: () => {
-            gtag("event", "newsletter-submitted");
-          },
-          onFormSubmitted: () => {
-            // redirect is now controlled from here
-            window.location.href = "/newsletter-confirmation";
-          },
-        },
-        onAddressSelect: () => {
+    //posthog.onFeatureFlags(function () {
+    BasePreorderApp.initialize({
+      targetElsAddressInput: [
+        document.getElementById("address-form"),
+        document.getElementById("hero-address-entry"),
+      ],
+      googlePublicApiKey: "AIzaSyB0o_nPI-xjHYKg7KB0bl87Yhnf2ng9Nsg",
+      targetPanel: "#popup-form",
+      targetAddressPanel: "#address-popup",
+      targetAvailableState: "#preorder-base",
+      targetNotAvailableState: "#not-available",
+      targetStateContainer: "#popup-form .form-box_holder",
+      targetAvailableText: `#preorder-availability`,
+      targetDisplayAddress: `#service-address`,
+      querySelectorClickToOpenForm: '[data-preorder="open"]',
+      googleSheetConfig: {
+        zipsCsvUrl:
+          "https://bpc-web-static-files.s3.us-east-2.amazonaws.com/deregulated-zips.csv",
+      },
+      // hubspot
+      hsFormSuccess: {
+        target: "#hubspot-preorder-form",
+        region: "na1",
+        portalId: "43873875",
+        formId: "a41c83a1-a371-4080-be84-5699814bc294",
+        onFormSubmit: () => {
           if (posthog) {
-            posthog.capture("user-submit-address-form");
+            posthog.capture("user-submit-hubspot-form");
           }
+          gtag("event", "preorder-submitted");
         },
-        hidePanelEl:
-          posthog?.isFeatureEnabled("redirect-to-join-form") || false,
-        onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
-          window.hubspotAddressData = addressData;
+        onFormSubmitted: window.hsOnFormSubmitted,
+      },
+      hsFormNewsletter: {
+        target: "#hubspot-email-form",
+        region: "na1",
+        portalId: "43873875",
+        formId: "bdfdc2d3-1e91-44e7-a477-02a68a93d0f9",
+        onFormSubmit: () => {
+          gtag("event", "newsletter-submitted");
+        },
+        onFormSubmitted: () => {
+          // redirect is now controlled from here
+          window.location.href = "/newsletter-confirmation";
+        },
+      },
+      onAddressSelect: () => {
+        if (posthog) {
+          posthog.capture("user-submit-address-form");
+        }
+      },
+      hidePanelEl: posthog?.isFeatureEnabled("redirect-to-join-form") || false,
+      onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
+        gtag("event", "address-submit", { leadType, addressData, zipConfig });
+        window.hubspotAddressData = addressData;
+        if (posthog) {
+          posthog.capture("user-submit-address-form");
+
+          // maybe redirect to sign-up form
+          if (posthog.isFeatureEnabled("redirect-to-join-form")) {
+            var signUpFormURL = "https://join.basepowercompany.com/";
+            var url = new URL(signUpFormURL);
+            var currentParams = new URLSearchParams(window.location.search);
+
+            var selectedParams = new URLSearchParams({
+              gclid: currentParams.get("gclid"),
+              referrer_name: currentParams.get("referrer_name"),
+              addressData: JSON.stringify(addressData),
+            });
+
+            url.search = selectedParams.toString();
+
+            window.location.href = url.toString();
+
+            return;
+          }
+        }
+        if (zipConfig?.servingNow === "preorder") {
           if (posthog) {
-            posthog.capture("user-submit-address-form");
-
-            // maybe redirect to sign-up form
-            if (posthog.isFeatureEnabled("redirect-to-join-form")) {
-              var signUpFormURL = "https://join.basepowercompany.com/";
-              var url = new URL(signUpFormURL);
-              var currentParams = new URLSearchParams(window.location.search);
-
-              var selectedParams = new URLSearchParams({
-                gclid: currentParams.get("gclid"),
-                referrer_name: currentParams.get("referrer_name"),
-                addressData: JSON.stringify(addressData),
-              });
-
-              url.search = selectedParams.toString();
-
-              window.location.href = url.toString();
-
-              return;
-            }
+            posthog.capture("user-sees-address-preorder");
           }
-          if (zipConfig?.servingNow === "preorder") {
-            if (posthog) {
-              posthog.capture("user-sees-address-preorder");
-            }
-            window.hsFormPreorder
-              .getElementsByClassName("hs_submit")[0]
-              .getElementsByClassName("hs-button")[0].value =
-              "Reserve Your Spot";
-            document.getElementsByClassName("form-heading top")[0].innerHTML =
-              "Submit your information to reserve your spot.";
-            document
-              .getElementsByClassName("form-box")[0]
-              .getElementsByTagName("h1")[0].innerHTML = "Base is coming soon!";
+          window.hsFormPreorder
+            .getElementsByClassName("hs_submit")[0]
+            .getElementsByClassName("hs-button")[0].value = "Reserve Your Spot";
+          document.getElementsByClassName("form-heading top")[0].innerHTML =
+            "Submit your information to reserve your spot.";
+          document
+            .getElementsByClassName("form-box")[0]
+            .getElementsByTagName("h1")[0].innerHTML = "Base is coming soon!";
+        }
+        if (zipConfig?.servingNow === "") {
+          if (posthog) {
+            posthog.capture("user-sees-address-waitlist");
           }
-          if (zipConfig?.servingNow === "") {
-            if (posthog) {
-              posthog.capture("user-sees-address-waitlist");
-            }
-            window.hsFormPreorder
-              .getElementsByClassName("hs_submit")[0]
-              .getElementsByClassName("hs-button")[0].value =
-              "Join the Waitlist";
-            document.getElementsByClassName("form-heading top")[0].innerHTML =
-              "Submit your information to join the waitlist.";
-            document
-              .getElementsByClassName("form-box")[0]
-              .getElementsByTagName("h1")[0].innerHTML = "Base is coming soon!";
+          window.hsFormPreorder
+            .getElementsByClassName("hs_submit")[0]
+            .getElementsByClassName("hs-button")[0].value = "Join the Waitlist";
+          document.getElementsByClassName("form-heading top")[0].innerHTML =
+            "Submit your information to join the waitlist.";
+          document
+            .getElementsByClassName("form-box")[0]
+            .getElementsByTagName("h1")[0].innerHTML = "Base is coming soon!";
+        }
+        if (zipConfig?.servingNow === "yes") {
+          if (posthog) {
+            posthog.capture("user-sees-hubspot-form");
           }
-          if (zipConfig?.servingNow === "yes") {
-            if (posthog) {
-              posthog.capture("user-sees-hubspot-form");
-            }
-            //document.getElementsByClassName("servis_address")[1].innerHTML = "";
-          }
-          gtag("event", "address-submit", { leadType, addressData, zipConfig });
-        },
-      });
+          //document.getElementsByClassName("servis_address")[1].innerHTML = "";
+        }
+      },
     });
+    //});
   });
 </script>
 
