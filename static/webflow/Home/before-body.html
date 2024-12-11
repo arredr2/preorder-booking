@@ -181,13 +181,28 @@
             var url = new URL(signUpFormURL);
             var currentParams = new URLSearchParams(window.location.search);
 
-            var selectedParams = new URLSearchParams({
+            var selectedParams = {
+              // google ads tracking params
               gclid: currentParams.get("gclid"),
+              utm_source: currentParams.get("utm_source"),
+              utm_medium: currentParams.get("utm_medium"),
+              utm_campaign: currentParams.get("utm_campaign"),
+              utm_term: currentParams.get("utm_term"),
+              utm_content: currentParams.get("utm_content"),
+              // Referral link
               referrer_name: currentParams.get("referrer_name"),
+              // Address form data we re-use on sign-up form
               addressData: JSON.stringify(addressData),
+            };
+
+            var filteredParams = {};
+            Object.entries(selectedParams).forEach(([k, v]) => {
+              if (v) {
+                filteredParams[k] = v;
+              }
             });
 
-            url.search = selectedParams.toString();
+            url.search = new URLSearchParams(filteredParams).toString();
 
             window.location.href = url.toString();
 
