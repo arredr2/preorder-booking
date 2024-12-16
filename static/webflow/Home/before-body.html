@@ -11,12 +11,10 @@
   type="text/javascript"
   src="//js-eu1.hsforms.net/forms/embed/v2.js"
   crossorigin
-  defer
 ></script>
 <script
   src="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.7/public/preorder-app/embed.js"
   crossorigin
-  defer
 ></script>
 
 <!-- hubspot form submit controls -->
@@ -114,10 +112,9 @@
 
 <!-- Pre-order app init -->
 <script>
-  // We wait for posthog to initialize feature flags before loading the application.
-  // We can remove this once we stop experimenting here.
-  document.addEventListener("DOMContentLoaded", function () {
-    //posthog.onFeatureFlags(function () {
+  var redirectToSignupForm =
+    posthog.getFeatureFlag("redirect-to-signup-form-v2") === "test";
+  posthog.onFeatureFlags(function () {
     BasePreorderApp.initialize({
       targetElsAddressInput: [
         document.getElementById("address-form"),
@@ -168,15 +165,19 @@
           posthog.capture("user-submit-address-form");
         }
       },
-      hidePanelEl: posthog?.isFeatureEnabled("redirect-to-join-form") || false,
+      hidePanelEl: redirectToSignupForm,
       onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
         gtag("event", "address-submit", { leadType, addressData, zipConfig });
         window.hubspotAddressData = addressData;
+
+        if (optibaseSendConversionEvent) {
+          optibaseSendConversionEvent("user_submit_address_form");
+        }
         if (posthog) {
           posthog.capture("user-submit-address-form");
 
           // maybe redirect to sign-up form
-          if (posthog.isFeatureEnabled("redirect-to-join-form")) {
+          if (redirectToSignupForm) {
             var signUpFormURL = "https://join.basepowercompany.com/";
             var url = new URL(signUpFormURL);
             var currentParams = new URLSearchParams(window.location.search);
@@ -208,7 +209,9 @@
 
             return;
           }
+          posthog.capture("user-sees-hubspot-form");
         }
+
         if (zipConfig?.servingNow === "preorder") {
           if (posthog) {
             posthog.capture("user-sees-address-preorder");
@@ -237,13 +240,12 @@
         }
         if (zipConfig?.servingNow === "yes") {
           if (posthog) {
-            posthog.capture("user-sees-hubspot-form");
+            posthog.capture("user-sees-available-form");
           }
           //document.getElementsByClassName("servis_address")[1].innerHTML = "";
         }
       },
     });
-    //});
   });
 </script>
 
