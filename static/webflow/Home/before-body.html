@@ -112,9 +112,9 @@
 
 <!-- Pre-order app init -->
 <script>
-  var redirectToSignupForm =
-    posthog.getFeatureFlag("redirect-to-signup-form-v2") === "test";
   posthog.onFeatureFlags(function () {
+    var redirectToSignupForm =
+      posthog.getFeatureFlag("redirect-to-signup-form-v2-debug") === "test";
     BasePreorderApp.initialize({
       targetElsAddressInput: [
         document.getElementById("address-form"),
