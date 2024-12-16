@@ -249,9 +249,6 @@
     font-weight: 400;
     line-height: 24px; /* 133.333% */
     padding: 3px 16px 0 48px;
-    @media screen and (max-width: 768px) {
-      font-size: 14px;
-    }
     &.focused {
       border-radius: 0 0 12px 12px;
     }
