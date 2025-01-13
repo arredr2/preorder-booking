@@ -24,7 +24,7 @@
       posthog.capture(
         "user_submitted_hubspot_form",
         {},
-        { send_instantly: true },
+        { send_instantly: true }
       );
     }
     const confirmationUrlWithParams = (base) => {
@@ -81,11 +81,11 @@
     // redirect is now controlled from here
     if (["preorder"].includes(servingNow) && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams(
-        "/confirmation-preorder",
+        "/confirmation-preorder"
       );
     } else if (promoCode === "DREAMHOME") {
       window.location.href = confirmationUrlWithParams(
-        "https://basepowercompany.com/reserve-now",
+        "https://basepowercompany.com/reserve-now"
       );
     } else if (servingNow === "install" && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams("/reserve-battery");
@@ -95,11 +95,11 @@
       window.location.href = confirmationUrlWithParams("/reserve-battery-500");
     } else if (servingNow === "fort worth" && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams(
-        "/confirmation-fort-worth",
+        "/confirmation-fort-worth"
       );
     } else if (servingNow === "yes" && isHomeowner === "Yes") {
       window.location.href = confirmationUrlWithParams(
-        "https://join.basepowercompany.com/reserve-now",
+        "https://join.basepowercompany.com/reserve-now"
       );
     } else if (isHomeowner === "No") {
       window.location.href = "/unqualified";
@@ -115,8 +115,7 @@
   posthog.onFeatureFlags(function () {
     var redirectToSignupForm =
       posthog.getFeatureFlag("redirect-to-signup-form-v2-debug") === "test";
-    var changeAddressCtaText =
-      posthog.getFeatureFlag("address-cta") === "test";
+    var changeAddressCtaText = posthog.getFeatureFlag("address-cta") === "test";
     BasePreorderApp.initialize({
       targetElsAddressInput: [
         document.getElementById("address-form"),
@@ -168,7 +167,9 @@
         }
       },
       hidePanelEl: redirectToSignupForm,
-      addressCtaText: changeAddressCtaText ? "Check Availability" : "Get Started",
+      addressCtaText: changeAddressCtaText
+        ? "Check Availability"
+        : "Get Started",
       onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
         gtag("event", "address-submit", { leadType, addressData, zipConfig });
         window.hubspotAddressData = addressData;
@@ -197,6 +198,7 @@
               referrer_name: currentParams.get("referrer_name"),
               // Address form data we re-use on sign-up form
               addressData: JSON.stringify(addressData),
+              formatted_address_v2: addressData?.formattedAddress || "",
             };
 
             var filteredParams = {};
@@ -283,7 +285,7 @@
 
         var autocomplete = new google.maps.places.Autocomplete(
           input,
-          autocompleteOptions,
+          autocompleteOptions
         );
 
         autocomplete.setComponentRestrictions({ country: ["us"] });
