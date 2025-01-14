@@ -168,7 +168,7 @@
         }
       },
       hidePanelEl: redirectToSignupForm,
-      addressCtaText: changeAddressCtaText ? "Check Availability" : "Get Started",
+      addressCtaText: changeAddressCtaText ? "Check Availability" : "Get started",
       onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
         gtag("event", "address-submit", { leadType, addressData, zipConfig });
         window.hubspotAddressData = addressData;
