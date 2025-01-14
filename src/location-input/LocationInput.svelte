@@ -14,7 +14,7 @@
 
   export let googlePublicApiKey: string;
   export let googleSheetConfig: SheetDataConfig;
-  export let addressCtaText: string = "Get Started";
+  export let addressCtaText: string = "Get started";
 
   const { store: zipStore, load: loadZips } = getZipStore(googleSheetConfig);
 

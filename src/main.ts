@@ -13,7 +13,7 @@ PreorderApp.initialize({
   targetAvailableText: `#preorder-availability`,
   targetDisplayAddress: `#service-address`,
   querySelectorClickToOpenForm: '[data-preorder="open"]',
-  addressCtaText: "Get Started",
+  addressCtaText: "Get started",
   // stripe
   googleSheetConfig: {
     zipsCsvUrl:
