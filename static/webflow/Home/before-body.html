@@ -199,51 +199,37 @@
                 utm_content: currentParams.get("utm_content"),
                 // Referral link
                 referrer_name: currentParams.get("referrer_name"),
-              };
 
-              var addressParams = {
                 // Address form data we re-use on sign-up form
                 // This is flattened
                 title: addressData?.title || "",
-                formattedAddress: addressData?.formattedAddress || "",
-                externalId: addressData?.externalId || "",
-                externalUrl: addressData?.externalUrl || "",
-                houseNumber: addressData?.houseNumber || "",
+                formatted_address: addressData?.formattedAddress || "",
+                external_id: addressData?.externalId || "",
+                external_url: addressData?.externalUrl || "",
+                house_number: addressData?.houseNumber || "",
                 street: addressData?.street || "",
                 street_2: addressData?.street_2 || "",
                 city: addressData?.city || "",
                 county: addressData?.county || "",
-                stateShort: addressData?.stateShort || "",
-                stateLong: addressData?.stateLong || "",
-                countryCode: addressData?.countryCode || "",
-                countryLong: addressData?.countryLong || "",
-                postalCode: addressData?.postalCode || "",
+                state_short: addressData?.stateShort || "",
+                state_long: addressData?.stateLong || "",
+                country_code: addressData?.countryCode || "",
+                country_long: addressData?.countryLong || "",
+                postal_code: addressData?.postalCode || "",
               };
 
-              var filteredRefParams = {};
+              var filteredParams = {};
               Object.entries(selectedParams).forEach(([k, v]) => {
                 if (v) {
-                  filteredRefParams[k] = v;
+                  filteredParams[k] = v;
                 }
               });
 
-              var addressRefParams = {};
-              Object.entries(addressParams).forEach(([k, v]) => {
-                if (v) {
-                  addressRefParams[k] = v;
-                }
-              });
+              var params = new URLSearchParams(filteredParams).toString();
 
-              var utmParams = new URLSearchParams(filteredRefParams).toString();
-              var addressParams = new URLSearchParams(
-                addressRefParams
-              ).toString();
+              url.search = params;
 
-              url.search = utmParams;
-
-              var finalUrl = url.toString() + "#" + addressParams;
-
-              window.location.href = finalUrl;
+              window.location.href = url.toString();
 
               return;
             }
