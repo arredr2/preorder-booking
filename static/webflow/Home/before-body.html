@@ -187,6 +187,7 @@
             if (useTypeformSignUp) {
               var signUpFormURL = "https://basepowercompany.com/join-now";
               var currentParams = new URLSearchParams(window.location.search);
+              var url = new URL(signUpFormURL);
 
               var selectedParams = {
                 // google ads tracking params
@@ -233,12 +234,16 @@
                 }
               });
 
-              url.search =
-                new URLSearchParams(filteredRefParams).toString() +
-                "#" +
-                new URLSearchParams(addressRefParams).toString();
+              var utmParams = new URLSearchParams(filteredRefParams).toString();
+              var addressParams = new URLSearchParams(
+                addressRefParams
+              ).toString();
 
-              window.location.href = url.toString();
+              url.search = utmParams;
+
+              var finalUrl = url.toString() + "#" + addressParams;
+
+              window.location.href = finalUrl;
 
               return;
             }
