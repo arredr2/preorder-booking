@@ -182,7 +182,7 @@
 
           // maybe redirect to sign-up form
           if (redirectToSignupForm) {
-            if (posthog.isFeatureEnabled("typeform-sign-up")) {
+            if (posthog.isFeatureEnabled("typeform-sign-up") === "test") {
               var signUpFormURL = "https://basepowercompany.com/join-now";
               var url = new URL(signUpFormURL);
               var currentParams = new URLSearchParams(window.location.search);
