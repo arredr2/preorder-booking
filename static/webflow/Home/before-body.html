@@ -182,6 +182,53 @@
 
           // maybe redirect to sign-up form
           if (redirectToSignupForm) {
+            if (posthog.isFeatureEnabled("typeform-sign-up")) {
+              var signUpFormURL = "https://join.basepowercompany.com/v2";
+              var url = new URL(signUpFormURL);
+              var currentParams = new URLSearchParams(window.location.search);
+
+              var selectedParams = {
+                // google ads tracking params
+                "#gclid": currentParams.get("gclid"),
+                "#utm_source": currentParams.get("utm_source"),
+                "#utm_medium": currentParams.get("utm_medium"),
+                "#utm_campaign": currentParams.get("utm_campaign"),
+                "#utm_term": currentParams.get("utm_term"),
+                "#utm_content": currentParams.get("utm_content"),
+                // Referral link
+                "#referrer_name": currentParams.get("referrer_name"),
+                // Address form data we re-use on sign-up form
+                // This is flattened
+                "#title": addressData?.title || "",
+                "#formattedAddress": addressData?.formattedAddress || "",
+                "#externalId": addressData?.externalId || "",
+                "#externalUrl": addressData?.externalUrl || "",
+                "#houseNumber": addressData?.houseNumber || "",
+                "#street": addressData?.street || "",
+                "#street_2": addressData?.street_2 || "",
+                "#city": addressData?.city || "",
+                "#county": addressData?.county || "",
+                "#stateShort": addressData?.stateShort || "",
+                "#stateLong": addressData?.stateLong || "",
+                "#countryCode": addressData?.countryCode || "",
+                "#countryLong": addressData?.countryLong || "",
+                "#postalCode": addressData?.postalCode || "",
+              };
+
+              var filteredParams = {};
+              Object.entries(selectedParams).forEach(([k, v]) => {
+                if (v) {
+                  filteredParams[k] = v;
+                }
+              });
+
+              url.search = new URLSearchParams(filteredParams).toString();
+
+              window.location.href = url.toString();
+
+              return;
+            }
+
             var signUpFormURL = "https://join.basepowercompany.com/";
             var url = new URL(signUpFormURL);
             var currentParams = new URLSearchParams(window.location.search);
