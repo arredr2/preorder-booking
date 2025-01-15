@@ -186,7 +186,6 @@
           if (redirectToSignupForm) {
             if (useTypeformSignUp) {
               var signUpFormURL = "https://basepowercompany.com/join-now";
-              var url = new URL(signUpFormURL);
               var currentParams = new URLSearchParams(window.location.search);
 
               var selectedParams = {
@@ -217,16 +216,21 @@
                 "#postalCode": addressData?.postalCode || "",
               };
 
-              var filteredParams = {};
-              Object.entries(selectedParams).forEach(([k, v]) => {
-                if (v) {
-                  filteredParams[k] = v;
+              // Build query string manually to preserve # symbols
+              var queryParts = [];
+              Object.entries(selectedParams).forEach(([key, value]) => {
+                if (value) {
+                  // Encode the value but keep the # in the key
+                  queryParts.push(`${key}=${encodeURIComponent(value)}`);
                 }
               });
 
-              url.search = new URLSearchParams(filteredParams).toString();
+              var finalUrl = signUpFormURL;
+              if (queryParts.length > 0) {
+                finalUrl += "?" + queryParts.join("&");
+              }
 
-              window.location.href = url.toString();
+              window.location.href = finalUrl;
 
               return;
             }
