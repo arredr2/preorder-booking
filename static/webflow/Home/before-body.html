@@ -167,7 +167,9 @@
         }
       },
       hidePanelEl: redirectToSignupForm,
-      addressCtaText: changeAddressCtaText ? "Check Availability" : "Get started",
+      addressCtaText: changeAddressCtaText
+        ? "Check Availability"
+        : "Get started",
       onAddressSubmitSuccess: (addressData, leadType, zipConfig) => {
         gtag("event", "address-submit", { leadType, addressData, zipConfig });
         window.hubspotAddressData = addressData;
@@ -243,7 +245,6 @@
               referrer_name: currentParams.get("referrer_name"),
               // Address form data we re-use on sign-up form
               addressData: JSON.stringify(addressData),
-              "#formatted_address_v2": addressData?.formattedAddress || "",
             };
 
             var filteredParams = {};
