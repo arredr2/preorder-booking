@@ -188,7 +188,10 @@
           const lines = csvText.split("\n");
           isDeregulated = lines.slice(1).some((line) => {
             const columns = line.split(",");
-            return columns[1]?.trim() === addressData?.postalCode?.trim();
+            return (
+              columns[1]?.trim() ===
+              addressData?.postalCode?.trim()?.substring(0, 5)
+            );
           });
         } catch (error) {
           console.error("Error checking zip code:", error);
