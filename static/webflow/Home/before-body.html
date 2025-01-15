@@ -198,7 +198,7 @@
               referrer_name: currentParams.get("referrer_name"),
               // Address form data we re-use on sign-up form
               addressData: JSON.stringify(addressData),
-              formatted_address_v2: addressData?.formattedAddress || "",
+              "#formatted_address_v2": addressData?.formattedAddress || "",
             };
 
             var filteredParams = {};
