@@ -190,47 +190,55 @@
 
               var selectedParams = {
                 // google ads tracking params
-                "#gclid": currentParams.get("gclid"),
-                "#utm_source": currentParams.get("utm_source"),
-                "#utm_medium": currentParams.get("utm_medium"),
-                "#utm_campaign": currentParams.get("utm_campaign"),
-                "#utm_term": currentParams.get("utm_term"),
-                "#utm_content": currentParams.get("utm_content"),
+                gclid: currentParams.get("gclid"),
+                utm_source: currentParams.get("utm_source"),
+                utm_medium: currentParams.get("utm_medium"),
+                utm_campaign: currentParams.get("utm_campaign"),
+                utm_term: currentParams.get("utm_term"),
+                utm_content: currentParams.get("utm_content"),
                 // Referral link
-                "#referrer_name": currentParams.get("referrer_name"),
-                // Address form data we re-use on sign-up form
-                // This is flattened
-                "#title": addressData?.title || "",
-                "#formattedAddress": addressData?.formattedAddress || "",
-                "#externalId": addressData?.externalId || "",
-                "#externalUrl": addressData?.externalUrl || "",
-                "#houseNumber": addressData?.houseNumber || "",
-                "#street": addressData?.street || "",
-                "#street_2": addressData?.street_2 || "",
-                "#city": addressData?.city || "",
-                "#county": addressData?.county || "",
-                "#stateShort": addressData?.stateShort || "",
-                "#stateLong": addressData?.stateLong || "",
-                "#countryCode": addressData?.countryCode || "",
-                "#countryLong": addressData?.countryLong || "",
-                "#postalCode": addressData?.postalCode || "",
+                referrer_name: currentParams.get("referrer_name"),
               };
 
-              // Build query string manually to preserve # symbols
-              var queryParts = [];
-              Object.entries(selectedParams).forEach(([key, value]) => {
-                if (value) {
-                  // Encode the value but keep the # in the key
-                  queryParts.push(`${key}=${encodeURIComponent(value)}`);
+              var addressParams = {
+                // Address form data we re-use on sign-up form
+                // This is flattened
+                title: addressData?.title || "",
+                formattedAddress: addressData?.formattedAddress || "",
+                externalId: addressData?.externalId || "",
+                externalUrl: addressData?.externalUrl || "",
+                houseNumber: addressData?.houseNumber || "",
+                street: addressData?.street || "",
+                street_2: addressData?.street_2 || "",
+                city: addressData?.city || "",
+                county: addressData?.county || "",
+                stateShort: addressData?.stateShort || "",
+                stateLong: addressData?.stateLong || "",
+                countryCode: addressData?.countryCode || "",
+                countryLong: addressData?.countryLong || "",
+                postalCode: addressData?.postalCode || "",
+              };
+
+              var filteredRefParams = {};
+              Object.entries(selectedParams).forEach(([k, v]) => {
+                if (v) {
+                  filteredRefParams[k] = v;
                 }
               });
 
-              var finalUrl = signUpFormURL;
-              if (queryParts.length > 0) {
-                finalUrl += "?" + queryParts.join("&");
-              }
+              var addressRefParams = {};
+              Object.entries(addressParams).forEach(([k, v]) => {
+                if (v) {
+                  addressRefParams[k] = v;
+                }
+              });
 
-              window.location.href = finalUrl;
+              url.search =
+                new URLSearchParams(filteredRefParams).toString() +
+                "#" +
+                new URLSearchParams(addressRefParams).toString();
+
+              window.location.href = url.toString();
 
               return;
             }
