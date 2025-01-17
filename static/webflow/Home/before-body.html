@@ -177,7 +177,7 @@
         window.hubspotAddressData = addressData;
 
         // Initialize isDeregulated as false
-        var isDeregulated = false;
+        var isDeregulatedAndAvailable = false;
 
         try {
           // Check if postal code exists in deregulated zips
@@ -186,16 +186,17 @@
           );
           const csvText = await response.text();
           const lines = csvText.split("\n");
-          isDeregulated = lines.slice(1).some((line) => {
+          isDeregulatedAndAvailable = lines.slice(1).some((line) => {
             const columns = line.split(",");
             return (
               columns[1]?.trim() ===
-              addressData?.postalCode?.trim()?.substring(0, 5)
+                addressData?.postalCode?.trim()?.substring(0, 5) &&
+              columns[4]?.trim() === "yes"
             );
           });
         } catch (error) {
           console.error("Error checking zip code:", error);
-          isDeregulated = false;
+          isDeregulatedAndAvailable = false;
         }
 
         if (optibaseSendConversionEvent) {
@@ -207,7 +208,7 @@
           // maybe redirect to sign-up form
           if (redirectToSignupForm) {
             // must be both a valid address and have the feature flag to proceed
-            if (useTypeformSignUp && isDeregulated) {
+            if (useTypeformSignUp && isDeregulatedAndAvailable) {
               var signUpFormURL = "https://basepowercompany.com/join-now";
               var currentParams = new URLSearchParams(window.location.search);
               var url = new URL(signUpFormURL);
