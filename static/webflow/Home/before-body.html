@@ -1,7 +1,7 @@
 <!-- CSS first -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.5/public/preorder-app/bundle.css"
+  href="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.21/public/preorder-app/bundle.css"
 />
 
 <!-- Functionality scripts -->
@@ -13,7 +13,7 @@
   crossorigin
 ></script>
 <script
-  src="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.7/public/preorder-app/embed.js"
+  src="https://cdn.jsdelivr.net/gh/BasePowerCompany/preorder-booking@1.0.21/public/preorder-app/embed.js"
   crossorigin
 ></script>
 
@@ -117,7 +117,6 @@
       posthog.getFeatureFlag("redirect-to-signup-form-v2-debug") === "test";
     var useTypeformSignUp =
       posthog.getFeatureFlag("typeform-sign-up") === "test";
-    var changeAddressCtaText = posthog.getFeatureFlag("address-cta") === "test";
     BasePreorderApp.initialize({
       targetElsAddressInput: [
         document.getElementById("address-form"),
@@ -169,9 +168,6 @@
         }
       },
       hidePanelEl: redirectToSignupForm,
-      addressCtaText: changeAddressCtaText
-        ? "Check Availability"
-        : "Get started",
       onAddressSubmitSuccess: async (addressData, leadType, zipConfig) => {
         gtag("event", "address-submit", { leadType, addressData, zipConfig });
         window.hubspotAddressData = addressData;
@@ -213,7 +209,7 @@
               var currentParams = new URLSearchParams(window.location.search);
               var url = new URL(signUpFormURL);
 
-              var selectedParams = {
+							 var selectedParams = {
                 // google ads tracking params
                 gclid: currentParams.get("gclid"),
                 utm_source: currentParams.get("utm_source"),
@@ -223,10 +219,9 @@
                 utm_content: currentParams.get("utm_content"),
                 // Referral link
                 referrer_name: currentParams.get("referrer_name"),
-
                 // posthog person id
-                person_id: posthog.getPersonId(),
-
+						    person_id: posthog.get_distinct_id(),
+                
                 // Address form data we re-use on sign-up form
                 // This is flattened
                 title: addressData?.title || "",
