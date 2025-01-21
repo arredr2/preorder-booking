@@ -224,6 +224,9 @@
                 // Referral link
                 referrer_name: currentParams.get("referrer_name"),
 
+                // posthog person id
+                person_id: posthog.getPersonId(),
+
                 // Address form data we re-use on sign-up form
                 // This is flattened
                 title: addressData?.title || "",
