@@ -116,7 +116,7 @@
     var redirectToSignupForm =
       posthog.getFeatureFlag("redirect-to-signup-form-v2-debug") === "test";
     var useTypeformSignUp =
-      posthog.getFeatureFlag("typeform-sign-up") === "test";
+      posthog.getFeatureFlag("typeform-sign-up-test") === "test";
     BasePreorderApp.initialize({
       targetElsAddressInput: [
         document.getElementById("address-form"),
@@ -230,6 +230,7 @@
                 external_url: addressData?.externalUrl || "",
                 house_number: addressData?.houseNumber || "",
                 street: addressData?.street || "",
+                street_address: `${addressData?.houseNumber || ""} ${addressData?.street || ""}`.trim(),
                 street_2: addressData?.street_2 || "",
                 city: addressData?.city || "",
                 county: addressData?.county || "",
